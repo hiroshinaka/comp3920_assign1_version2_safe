@@ -17,7 +17,7 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-const expireTime = 24 * 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
+const expireTime =  1 * 60 * 60 * 1000 ; //expires after 1 hour  (hours * minutes * seconds * millis)
 
 
 /* secret information section */
@@ -115,6 +115,19 @@ app.post('/submitUser', async (req,res) => {
     }
 
 });
+app.post('/signout', (req, res) => {
+    // Destroy the session to log the user out
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error destroying session:", err);
+            res.status(500).send("Could not sign out. Please try again.");
+        } else {
+            // Redirect to the home page or login page after signing out
+            res.redirect('/');
+        }
+    });
+});
+
 
 app.post('/loggingin', async (req,res) => {
     var username = req.body.username;
@@ -140,15 +153,17 @@ app.post('/loggingin', async (req,res) => {
         }
         else {
             console.log('invalid number of users matched: '+results.length+" (expected 1).");
-            res.redirect('/login');
+            res.redirect('/');
             return;            
         }
     }
 
     console.log('user not found');
     //user and password combination not found
-    res.redirect("/login");
+    res.redirect("/");
 });
+
+
 
 
 function isValidSession(req) {
@@ -161,7 +176,7 @@ function isValidSession(req) {
 function sessionValidation(req, res, next) {
 	if (!isValidSession(req)) {
 		req.session.destroy();
-		res.redirect('/login');
+		res.redirect('/');
 		return;
 	}
 	else {
@@ -207,10 +222,10 @@ app.get('/loggedin/memberinfo', (req,res) => {
 });
 
 
-app.get('/cat/:id', (req,res) => {
-    var cat = req.params.id;
+app.get('/rilla/:id', (req,res) => {
+    var rilla = req.params.id;
 
-    res.render("cat", {cat: cat});
+    res.render("rilla", {rilla: rilla});
 });
 
 
